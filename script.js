@@ -13,6 +13,8 @@ const apiURL = 'https://thequoteshub.com/api/random-quote';
 const LOCAL_STORAGE_QUOTE_KEY = 'lastDisplayedQuote';
 const LOCAL_STORAGE_AUTHOR_KEY = 'lastDisplayedAuthor';
 
+let lastDisplayedQuote = null; // Variable to store the last displayed quote
+
 // Function to fetch a random quote from the API
 async function getNewQuote() {
     try {
@@ -24,18 +26,34 @@ async function getNewQuote() {
         quoteElement.classList.add('fade-out'); // Start Fade Out
         await new Promise(resolve => setTimeout(resolve, 500)); // Wait for the transition
 
-        // Make the API request using fetch
-        const response = await fetch(apiURL);
+        let newQuoteData;
+        let attempts = 0;
+        const maxAttempts = 5; // To prevent potential infinite loops
 
-        // Check if the request was successful (status code 200)
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        do {
+            // Make the API request using fetch
+            const response = await fetch(apiURL);
 
-        // Parse the JSON response
-        const data = await response.json();
-        const quote = data.text;
-        const author = data.author;
+            // Check if the request was successful (status code 200)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Parse the JSON response
+            newQuoteData = await response.json();
+            attempts++;
+
+            // Check if the new quote is the same as the last one
+            if (newQuoteData.quote === lastDisplayedQuote && attempts < maxAttempts) {
+                console.log("Duplicate quote found, fetching another one...");
+                await new Promise(resolve => setTimeout(resolve, 200));
+            } else {
+                break;
+            }
+        } while (true);
+
+        const quote = newQuoteData.text; 
+        const author = newQuoteData.author;
 
         // Update the HTML with the fetched quote and author
         quoteElement.textContent = quote;
@@ -44,6 +62,9 @@ async function getNewQuote() {
         // Store the new quote and author in local storage
         localStorage.setItem(LOCAL_STORAGE_QUOTE_KEY, quote);
         localStorage.setItem(LOCAL_STORAGE_AUTHOR_KEY, author);
+
+        // Update the last displayed quote
+        lastDisplayedQuote = quote;
 
         quoteElement.classList.remove('fade-out'); // Fade in
 
@@ -76,6 +97,7 @@ function loadLastQuote() {
         authorElement.textContent = `- ${lastAuthor}`;
         quoteElement.style.display = 'block';
         authorElement.style.display = 'block';
+        lastDisplayedQuote = lastQuote; // Set the initial last displayed quote
     } else {
         // If no quote in local storage, fetch a new one initially
         getNewQuote();
@@ -111,7 +133,7 @@ function shareOnTwitter() {
 
 function shareOnFacebook() {
     const quote = quoteElement.textContent;
-    const author = quoteElement.textContent;
+    const author = authorElement.textContent;
     const quoteText = `${quote} ${author}`;
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(quoteText)}`;
     window.open(facebookUrl, '_blank');
