@@ -10,6 +10,9 @@ const loadingMessageElement = document.getElementById('loading-message');
 // API endpoint for random quotes
 const apiURL = 'https://thequoteshub.com/api/random-quote';
 
+const LOCAL_STORAGE_QUOTE_KEY = 'lastDisplayedQuote';
+const LOCAL_STORAGE_AUTHOR_KEY = 'lastDisplayedAuthor';
+
 // Function to fetch a random quote from the API
 async function getNewQuote() {
     try {
@@ -31,10 +34,16 @@ async function getNewQuote() {
 
         // Parse the JSON response
         const data = await response.json();
+        const quote = data.text;
+        const author = data.author;
 
         // Update the HTML with the fetched quote and author
-        quoteElement.textContent = data.text;
-        authorElement.textContent = `- ${data.author}`;
+        quoteElement.textContent = quote;
+        authorElement.textContent = `- ${author}`;
+
+        // Store the new quote and author in local storage
+        localStorage.setItem(LOCAL_STORAGE_QUOTE_KEY, quote);
+        localStorage.setItem(LOCAL_STORAGE_AUTHOR_KEY, author);
 
         quoteElement.classList.remove('fade-out'); // Fade in
 
@@ -54,6 +63,22 @@ async function getNewQuote() {
         loadingMessageElement.style.display = 'none';
         quoteElement.style.display = 'block';
         authorElement.style.display = 'block';
+    }
+}
+
+// Function to load the last displayed qupte from local storage
+function loadLastQuote() {
+    const lastQuote = localStorage.getItem(LOCAL_STORAGE_QUOTE_KEY);
+    const lastAuthor = localStorage.getItem(LOCAL_STORAGE_AUTHOR_KEY);
+
+    if (lastQuote && lastAuthor) {
+        quoteElement.textContent = lastQuote;
+        authorElement.textContent = `- ${lastAuthor}`;
+        quoteElement.style.display = 'block';
+        authorElement.style.display = 'block';
+    } else {
+        // If no quote in local storage, fetch a new one initially
+        getNewQuote();
     }
 }
 
@@ -99,4 +124,4 @@ shareTwitterButton.addEventListener('click', shareOnTwitter);
 shareFacebookButton.addEventListener('click', shareOnFacebook);
 
 // Fethc an initial quote when the page loads
-getNewQuote();
+loadLastQuote();
