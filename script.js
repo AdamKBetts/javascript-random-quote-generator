@@ -9,9 +9,8 @@ const apiURL = 'https://thequoteshub.com/api/random-quote';
 // Function to fetch a random quote from the API
 async function getNewQuote() {
     try {
-        // Show a loading message while fetching
-        quoteElement.textContent = 'Loading...';
-        authorElement.textContent = '';
+        quoteElement.classList.add('fade-out'); // Start Fade Out
+        await new Promise(resolve => setTimeout(resolve, 500)); // Wait for the transition
 
         // Make the API request using fetch
         const response = await fetch(apiURL);
@@ -24,19 +23,18 @@ async function getNewQuote() {
         // Parse the JSON response
         const data = await response.json();
 
-        // Extract the quote and author from the data
-        const quote = data.text;
-        const author = data.author;
-
         // Update the HTML with the fetched quote and author
-        quoteElement.textContent = quote;
-        authorElement.textContent = `- ${author}`;
+        quoteElement.textContent = data.text;
+        authorElement.textContent = `- ${data.author}`;
+
+        quoteElement.classList.remove('fade-out'); // Fade in
 
     } catch (error) {
         // Handle any errors that occurred during the API request
         console.error('Failed to fetch quote:', error);
         quoteElement.textContent = 'Failed to load quote.';
         authorElement.textContent = '';
+        quoteElement.classList.remove('fade-out');
     }
 }
 
