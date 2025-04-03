@@ -76,7 +76,13 @@ async function getNewQuote() {
     } catch (error) {
         // Handle any errors that occurred during the API request
         console.error('Failed to fetch quote:', error);
-        quoteElement.textContent = 'Failed to load quote.';
+
+        // Check for specific errot types that might indicate no internet
+        if (error instanceof TypeError && error.message === 'Failed to fetch') {
+            quoteElement.textContent = 'No internet connection. Please check your network and try again.';
+        } else {
+            quoteElement.textContent = 'Failed to load quote.';
+        }
         authorElement.textContent = '';
         quoteElement.classList.remove('fade-out');
 
