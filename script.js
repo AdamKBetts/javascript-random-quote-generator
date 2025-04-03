@@ -1,32 +1,47 @@
-// Array of quotes
-const quotes = [
-    { quote: "The only way to do great work is to love what you do.", author: "Steve Jobs"},
-    { quote: "Strive not to be a success, but rather to be of value.", author: "Albert Einstein"},
-    { quote: "The mind is everything. What you think you become.", author: "Buddha"},
-    { quote: "Two roads diverged in a wood, and I—I took the one less traveled by, And that has made all the difference.", author: "Robert Frost"},
-    { quote: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt"}
-];
-
 // Get references to the HTML elements
 const quoteElement = document.querySelector('.quote');
+const authorElement = document.querySelector('.author');
 const newQuoteButton = document.getElementById('new-quote-button');
 
-// Function to generate a random index
-function getRandomIndex() {
-    return Math.floor(Math.random() * quotes.length);
-}
+// API endpoint for random quotes
+const apiURL = 'https://thequoteshub.com/api/random-quote';
 
-// Function to update the quote in the HTML
-function displayQuote() {
-    const randomIndex = getRandomIndex();
-    const randomQuoteObject = quotes[randomIndex];
-    quoteElement.textContent = randomQuoteObject.quote;
-    const authorElement = document.querySelector('.author');
-    authorElement.textContent = `- ${randomQuoteObject.author}`;
+// Function to fetch a random quote from the API
+async function getNewQuote() {
+    try {
+        // Show a loading message while fetching
+        quoteElement.textContent = 'Loading...';
+        authorElement.textContent = '';
+
+        // Make the API request using fetch
+        const response = await fetch(apiURL);
+
+        // Check if the request was successful (status code 200)
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Parse the JSON response
+        const data = await response.json();
+
+        // Extract the quote and author from the data
+        const quote = data.text;
+        const author = data.author;
+
+        // Update the HTML with the fetched quote and author
+        quoteElement.textContent = quote;
+        authorElement.textContent = `- ${author}`;
+
+    } catch (error) {
+        // Handle any errors that occurred during the API request
+        console.error('Failed to fetch quote:', error);
+        quoteElement.textContent = 'Failed to load quote.';
+        authorElement.textContent = '';
+    }
 }
 
 // Event listener for the button click
-newQuoteButton.addEventListener('click', displayQuote);
+newQuoteButton.addEventListener('click', getNewQuote);
 
-// Display an intial quote when the page loads
-displayQuote();
+// Fethc an initial quote when the page loads
+getNewQuote();
