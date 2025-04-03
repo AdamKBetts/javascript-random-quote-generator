@@ -5,6 +5,7 @@ const newQuoteButton = document.getElementById('new-quote-button');
 const copyQuoteButton = document.getElementById('copy-quote-button');
 const shareTwitterButton = document.getElementById('share-twitter');
 const shareFacebookButton = document.getElementById('share-facebook');
+const loadingMessageElement = document.getElementById('loading-message');
 
 // API endpoint for random quotes
 const apiURL = 'https://thequoteshub.com/api/random-quote';
@@ -12,6 +13,11 @@ const apiURL = 'https://thequoteshub.com/api/random-quote';
 // Function to fetch a random quote from the API
 async function getNewQuote() {
     try {
+        // Show loading message and hide quote/author
+        loadingMessageElement.style.display = 'inline';
+        quoteElement.style.display = 'none';
+        authorElement.style.display = 'none';
+
         quoteElement.classList.add('fade-out'); // Start Fade Out
         await new Promise(resolve => setTimeout(resolve, 500)); // Wait for the transition
 
@@ -32,12 +38,22 @@ async function getNewQuote() {
 
         quoteElement.classList.remove('fade-out'); // Fade in
 
+        // Hide loading message and show quote/author
+        loadingMessageElement.style.display = 'none';
+        quoteElement.style.display = 'block';
+        authorElement.style.display = 'block';
+
     } catch (error) {
         // Handle any errors that occurred during the API request
         console.error('Failed to fetch quote:', error);
         quoteElement.textContent = 'Failed to load quote.';
         authorElement.textContent = '';
         quoteElement.classList.remove('fade-out');
+
+        // Hide loading message and show error message
+        loadingMessageElement.style.display = 'none';
+        quoteElement.style.display = 'block';
+        authorElement.style.display = 'block';
     }
 }
 
