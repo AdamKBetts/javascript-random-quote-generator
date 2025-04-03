@@ -72,3 +72,28 @@ body {
 #copy-quote-button:hover {
     background-color: #1e7e34;
 }
+
+.social-buttons {
+    margin-top: 20px;
+}
+
+.social-buttons button {
+    background-color: #1da1f2;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+}
+
+.social-buttons button:last-child {
+    background-color: #1877f2;
+    margin-right: 0;
+}
+
+.social-buttons button:hover {
+    opacity: 0.8;
+}

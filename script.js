@@ -3,6 +3,8 @@ const quoteElement = document.querySelector('.quote');
 const authorElement = document.querySelector('.author');
 const newQuoteButton = document.getElementById('new-quote-button');
 const copyQuoteButton = document.getElementById('copy-quote-button');
+const shareTwitterButton = document.getElementById('share-twitter');
+const shareFacebookButton = document.getElementById('share-facebook');
 
 // API endpoint for random quotes
 const apiURL = 'https://thequoteshub.com/api/random-quote';
@@ -58,9 +60,27 @@ function copyQuote() {
         });
 }
 
+function shareOnTwitter() {
+    const quote = quoteElement.textContent;
+    const author = authorElement.textContent;
+    const tweetText = `${quote} ${author}`;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    window.open(twitterUrl, '_blank');
+}
+
+function shareOnFacebook() {
+    const quote = quoteElement.textContent;
+    const author = quoteElement.textContent;
+    const quoteText = `${quote} ${author}`;
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(quoteText)}`;
+    window.open(facebookUrl, '_blank');
+}
+
 // Event listener for the button click
 newQuoteButton.addEventListener('click', getNewQuote);
 copyQuoteButton.addEventListener('click', copyQuote);
+shareTwitterButton.addEventListener('click', shareOnTwitter);
+shareFacebookButton.addEventListener('click', shareOnFacebook);
 
 // Fethc an initial quote when the page loads
 getNewQuote();
