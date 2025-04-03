@@ -56,3 +56,19 @@ body {
 #new-quote-button:hover {
     background-color: #0288d1;
 }
+
+#copy-quote-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+#copy-quote-button:hover {
+    background-color: #1e7e34;
+}
